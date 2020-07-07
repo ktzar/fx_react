@@ -2,8 +2,9 @@ import { createAction, handleActions } from 'redux-actions';
 import { eventChannel } from 'redux-saga';
 import { select, take, put, call } from 'redux-saga/effects';
 import { inputToAmount } from '../utils/formatting';
+import { fetchRate, fetchCurrenciesList } from '../services/currencies';
 
-const API_HOST = 'https://api.exchangeratesapi.io';
+const POLLING_TIME = 10000;
 
 const initialState = {
     notionalAmount: 100,
@@ -70,7 +71,10 @@ export const currenciesReducer = handleActions(
 );
 
 let subscription;
-const POLLING_TIME = 20000;
+
+function emitRate(emit, baseCcy, termsCcy) {
+    fetchRate(baseCcy, termsCcy).then(rate => emit(rate));
+}
 
 export function* startSubscription(action) {
     try {
@@ -78,13 +82,15 @@ export function* startSubscription(action) {
             subscription.close();
         }
         const state = yield select();
-        const base = state.currencies.baseCcy;
-        const terms = state.currencies.termsCcy;
+        const { baseCcy, termsCcy } = state.currencies;
 
         subscription = eventChannel( emit => {
-            emitRate(emit, base, terms);
+            fetchRate(baseCcy, termsCcy)
+                .then(rate => emit(rate));
+
             const interval = setInterval(() => {
-                emitRate(emit, base, terms);
+                fetchRate(baseCcy, termsCcy)
+                    .then(rate => emit(rate));
             }, POLLING_TIME);
 
             return () => {
@@ -99,18 +105,6 @@ export function* startSubscription(action) {
 
     } catch (e) {
     }
-}
-
-function emitRate(emit, baseCcy, termsCcy) {
-    const uri = `${API_HOST}/latest?symbols=${termsCcy}&base=${baseCcy}`;
-    return fetch(uri)
-        .then(d => d.json())
-        .then(d => {emit(d.rates[termsCcy]);})
-}
-function fetchCurrenciesList() {
-    return fetch(API_HOST + '/latest?base=GBP')
-        .then(d => d.json())
-        .then(d => {const ccys = Object.keys(d.rates); ccys.sort(); return ccys;});
 }
 
 export function* fetchCurrencies() {

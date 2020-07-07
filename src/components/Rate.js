@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import flipIcon from '../images/flip.svg';
 
 import { formatRate } from '../utils/formatting';
 

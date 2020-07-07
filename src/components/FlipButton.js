@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import flipIcon from '../images/flip.svg';
 
 const RoundButton = styled.button`
     border: 1px solid #666;
