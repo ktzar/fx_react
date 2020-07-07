@@ -14,3 +14,4 @@ export const inputToAmount = value => {
 };
 
 export const formatAmount = amount => numeral(amount).format('0,0.00');
+export const formatRate = amount => numeral(amount).format('0.00');

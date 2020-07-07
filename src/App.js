@@ -1,15 +1,36 @@
 import React, {useEffect} from 'react';
-import './App.css';
+import styled from 'styled-components';
 import { connect } from 'react-redux';
+
+import './App.css';
 import { changeAmount, changeBaseCcy, changeTermsCcy, swapCurrencies } from './redux/currencies';
 import { attemptTransaction } from './redux/pockets';
 import { appLoaded } from './redux/appState';
+import { canExchange } from './redux/selectors';
 
 import { formatAmount } from './utils/formatting';
+
+import { CurrencyPanel } from './components/CurrencyPanel';
+import { FlipButton } from './components/FlipButton';
+import { Rate } from './components/Rate';
+import { AppHeader } from './components/AppHeader';
+import { CTAButton } from './components/CTAButton';
+
+const AppContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+`;
+
+const CentralBar = styled.div`
+    position: relative;
+    top: 12px;
+`;
 
 export const AppComponent = (props) => {
     const { pockets, notionalAmount, notionalCcy, baseCcy, termsCcy, currenciesList, rate } = props;
     const { onAppLoaded, onChangeBase, onChangeTerms, onSwap, onChangeAmount, onExchange } = props;
+    const { isExchangeDisabled } = props;
 
     useEffect(onAppLoaded, []);
 
@@ -22,33 +43,16 @@ export const AppComponent = (props) => {
 
   return (
     <div className="App">
-      <header className="App-header">
-        Exchange
-      </header>
-      <section>
-        <div>
-            <select value={baseCcy} onChange={onChangeBase}>
-                {currenciesList.map(c => <option key={c} value={c}>{c}</option>)}
-            </select>
-            <input onChange={evt => onChangeAmount(evt, baseCcy)} value={baseAmount}/>
-        </div>
-        <div>
-            { basePocket ? `${formatAmount(basePocket)} ${baseCcy} available` : `No ${baseCcy} funds available` }
-        </div>
-      </section>
-      <button onClick={onSwap}>Flip {rate}</button>
-      <section>
-        <div>
-            <select value={termsCcy} onChange={onChangeTerms}>
-                {currenciesList.map(c => <option key={c} value={c}>{c}</option>)}
-            </select>
-            <label>{formatAmount(termsAmount)}</label>
-        </div>
-        <div>
-            { termsPocket ? `${formatAmount(termsPocket)} ${termsCcy} available` : `No ${termsCcy} funds available` }
-        </div>
-      </section>
-      <button onClick={onExchange}>Exchange</button>
+      <AppHeader>Exchange</AppHeader>
+      <CurrencyPanel editable currencies={currenciesList} ccy={baseCcy} funds={basePocket} amount={baseAmount} onChangeCcy={onChangeBase} onChangeAmount={onChangeAmount} /> 
+
+      <CentralBar>
+        <FlipButton onClick={onSwap} /> <Rate baseCcy={baseCcy} termsCcy={termsCcy} rate={rate} />
+      </CentralBar>
+
+      <CurrencyPanel editable={false} currencies={currenciesList} ccy={termsCcy} funds={termsPocket} amount={termsAmount} onChangeCcy={onChangeTerms} /> 
+
+      <CTAButton onClick={onExchange} disabled={isExchangeDisabled}>Exchange</CTAButton>
     </div>
   );
 }
@@ -59,6 +63,7 @@ const mapStateToProps = (state) => ({
     currenciesList: state.currencies.currenciesList,
     baseCcy: state.currencies.baseCcy,
     termsCcy: state.currencies.termsCcy,
+    isExchangeDisabled: !canExchange(state),
     rate: state.currencies.rate,
     pockets: state.pockets.amounts
 });

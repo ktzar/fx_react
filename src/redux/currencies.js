@@ -27,7 +27,7 @@ export const currenciesReducer = handleActions(
     {
         [changeAmount]: (state, {payload}) => {
             const {value, notionalCcy} = payload;
-            const notionalAmount = inputToAmount(value)
+            const notionalAmount = Math.min(10000000, inputToAmount(value))
             return {
                 ...state,
                 notionalAmount,
@@ -56,13 +56,13 @@ export const currenciesReducer = handleActions(
         [changeBaseCcy]: (state, {payload}) => {
             return {
                 ...state,
-                baseCcy: payload // TODO check if same as terms
+                baseCcy: payload === state.termsCcy ? state.baseCcy : payload
             };
         },
         [changeTermsCcy]: (state, {payload}) => {
             return {
                 ...state,
-                termsCcy: payload // TODO check if same as base
+                termsCcy: payload === state.baseCcy ? state.termsCcy : payload
             };
         }
     },
@@ -118,6 +118,6 @@ export function* fetchCurrencies() {
         const currencies = yield call(fetchCurrenciesList);
         yield put(receiveCurrencies(currencies));
     } catch(err) {
-        //TODO error action to display something
+        //TODO error action to display message to the user
     };
 }
