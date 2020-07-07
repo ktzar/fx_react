@@ -1,14 +1,24 @@
 import React, {useEffect} from 'react';
 import './App.css';
 import { connect } from 'react-redux';
-import { changeBaseCurrency, changeTermsCurrency, swapCurrencies } from './redux/currencies';
+import { changeAmount, changeBaseCcy, changeTermsCcy, swapCurrencies } from './redux/currencies';
+import { attemptTransaction } from './redux/pockets';
 import { appLoaded } from './redux/appState';
 
+import { formatAmount } from './utils/formatting';
+
 export const AppComponent = (props) => {
-    const { baseCurrency, termsCurrency, currenciesList, rate, onAppLoaded, onChangeBase, onChangeTerms, onSwap} = props;
+    const { pockets, notionalAmount, notionalCcy, baseCcy, termsCcy, currenciesList, rate } = props;
+    const { onAppLoaded, onChangeBase, onChangeTerms, onSwap, onChangeAmount, onExchange } = props;
 
     useEffect(onAppLoaded, []);
-    const amount = 200;
+
+    const baseAmount = notionalCcy === baseCcy ? notionalAmount : (notionalAmount / rate).toFixed(2);
+    const termsAmount = notionalCcy === termsCcy ? notionalAmount : (notionalAmount * rate).toFixed(2);
+
+    const basePocket = pockets[baseCcy] || pockets[baseCcy];
+    const termsPocket = pockets[termsCcy] || pockets[termsCcy];
+
 
   return (
     <div className="App">
@@ -17,37 +27,48 @@ export const AppComponent = (props) => {
       </header>
       <section>
         <div>
-            <select value={baseCurrency} onChange={onChangeBase}>
+            <select value={baseCcy} onChange={onChangeBase}>
                 {currenciesList.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
-            <input value={amount}/>
+            <input onChange={evt => onChangeAmount(evt, baseCcy)} value={baseAmount}/>
+        </div>
+        <div>
+            { basePocket ? `${formatAmount(basePocket)} ${baseCcy} available` : `No ${baseCcy} funds available` }
         </div>
       </section>
       <button onClick={onSwap}>Flip {rate}</button>
       <section>
         <div>
-            <select value={termsCurrency} onChange={onChangeTerms}>
+            <select value={termsCcy} onChange={onChangeTerms}>
                 {currenciesList.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
-            <input value={amount * rate} />
+            <label>{formatAmount(termsAmount)}</label>
+        </div>
+        <div>
+            { termsPocket ? `${formatAmount(termsPocket)} ${termsCcy} available` : `No ${termsCcy} funds available` }
         </div>
       </section>
-      <button>Exchange</button>
+      <button onClick={onExchange}>Exchange</button>
     </div>
   );
 }
 
 const mapStateToProps = (state) => ({
+    notionalAmount: state.currencies.notionalAmount,
+    notionalCcy: state.currencies.notionalCcy,
     currenciesList: state.currencies.currenciesList,
-    baseCurrency: state.currencies.baseCurrency,
-    termsCurrency: state.currencies.termsCurrency,
-    rate: state.currencies.rate
+    baseCcy: state.currencies.baseCcy,
+    termsCcy: state.currencies.termsCcy,
+    rate: state.currencies.rate,
+    pockets: state.pockets.amounts
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    onChangeBase: evt => dispatch(changeBaseCurrency(evt.target.value)),
-    onChangeTerms: evt => dispatch(changeTermsCurrency(evt.target.value)),
+    onExchange: evt => dispatch(attemptTransaction()),
+    onChangeBase: evt => dispatch(changeBaseCcy(evt.target.value)),
+    onChangeTerms: evt => dispatch(changeTermsCcy(evt.target.value)),
     onSwap: () => dispatch(swapCurrencies()),
+    onChangeAmount: (evt, notionalCcy) => dispatch(changeAmount({value: evt.target.value, notionalCcy})),
     onAppLoaded: () => dispatch(appLoaded())
 });
 

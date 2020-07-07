@@ -6,24 +6,33 @@ import {
     currenciesReducer,
     startSubscription,
     swapCurrencies,
-    changeBaseCurrency,
-    changeTermsCurrency,
-    fetchCurrencies
+    changeBaseCcy,
+    changeTermsCcy,
+    fetchCurrencies,
+    receiveCurrencies
 } from './redux/currencies';
+
+import { 
+    pocketsReducer,
+    attemptTransaction,
+    executeIfEnoughFunds
+} from './redux/pockets';
 
 import { appLoaded } from './redux/appState';
 
 const rootReducer = combineReducers({
-    currencies: currenciesReducer
+    currencies: currenciesReducer,
+    pockets: pocketsReducer
 });
 
 export function* rootSaga() {
     yield all([
         takeLatest(
-            [swapCurrencies, changeBaseCurrency, changeTermsCurrency],
+            [receiveCurrencies, swapCurrencies, changeBaseCcy, changeTermsCcy],
             startSubscription
         ),
-        takeLatest(appLoaded, fetchCurrencies)
+        takeLatest(appLoaded, fetchCurrencies),
+        takeLatest(attemptTransaction, executeIfEnoughFunds)
     ]);
 };
 

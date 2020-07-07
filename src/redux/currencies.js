@@ -1,24 +1,39 @@
 import { createAction, handleActions } from 'redux-actions';
 import { eventChannel } from 'redux-saga';
 import { select, take, put, call } from 'redux-saga/effects';
+import { inputToAmount } from '../utils/formatting';
+
+const API_HOST = 'https://api.exchangeratesapi.io';
 
 const initialState = {
+    notionalAmount: 100,
+    notionalCcy: 'GBP',
     currenciesList: ['GBP', 'USD'],
-    dealtCurrency: 'GBP',
-    baseCurrency: 'GBP',
-    termsCurrency: 'USD',
+    dealtCcy: 'GBP',
+    baseCcy: 'GBP',
+    termsCcy: 'USD',
     rate: 1.22
 };
 
 //actions
 export const newRate = createAction('NEW_RATE');
 export const swapCurrencies = createAction('SWAP_CURRENCIES');
-export const changeBaseCurrency = createAction('CHANGE_BASE_CCY');
-export const changeTermsCurrency = createAction('CHANGE_TERMS_CCY');
+export const changeAmount = createAction('CHANGE_AMOUNT');
+export const changeBaseCcy = createAction('CHANGE_BASE_CCY');
+export const changeTermsCcy = createAction('CHANGE_TERMS_CCY');
 export const receiveCurrencies = createAction('RECEIVE_CURRENCIES');
 
 export const currenciesReducer = handleActions(
     {
+        [changeAmount]: (state, {payload}) => {
+            const {value, notionalCcy} = payload;
+            const notionalAmount = inputToAmount(value)
+            return {
+                ...state,
+                notionalAmount,
+                notionalCcy
+            };
+        },
         [receiveCurrencies]: (state, {payload}) => {
             return {
                 ...state,
@@ -28,8 +43,8 @@ export const currenciesReducer = handleActions(
         [swapCurrencies]: (state, payload) => {
             return {
                 ...state,
-                baseCurrency: state.termsCurrency,
-                termsCurrency: state.baseCurrency
+                baseCcy: state.termsCcy,
+                termsCcy: state.baseCcy
             };
         },
         [newRate]: (state, {payload}) => {
@@ -38,16 +53,16 @@ export const currenciesReducer = handleActions(
                 rate: payload
             };
         },
-        [changeBaseCurrency]: (state, {payload}) => {
+        [changeBaseCcy]: (state, {payload}) => {
             return {
                 ...state,
-                baseCurrency: payload // TODO check if same as terms
+                baseCcy: payload // TODO check if same as terms
             };
         },
-        [changeTermsCurrency]: (state, {payload}) => {
+        [changeTermsCcy]: (state, {payload}) => {
             return {
                 ...state,
-                termsCurrency: payload // TODO check if same as base
+                termsCcy: payload // TODO check if same as base
             };
         }
     },
@@ -57,33 +72,28 @@ export const currenciesReducer = handleActions(
 let subscription;
 const POLLING_TIME = 20000;
 
-function createPriceChannel({base, terms}) {
-    return eventChannel( emit => {
-        emitRate(emit, base, terms);
-        const interval = setInterval(() => {
-            emitRate(emit, base, terms);
-        }, POLLING_TIME);
-
-        return () => {
-            clearInterval(interval);
-        }
-    });
-}
-
 export function* startSubscription(action) {
     try {
         if (subscription) {
             subscription.close();
         }
         const state = yield select();
-        const base = state.currencies.baseCurrency;
-        const terms = state.currencies.termsCurrency;
-        console.log({base, terms});
-        subscription = yield call(createPriceChannel, {base, terms});
+        const base = state.currencies.baseCcy;
+        const terms = state.currencies.termsCcy;
+
+        subscription = eventChannel( emit => {
+            emitRate(emit, base, terms);
+            const interval = setInterval(() => {
+                emitRate(emit, base, terms);
+            }, POLLING_TIME);
+
+            return () => {
+                clearInterval(interval);
+            }
+        })
 
         while (true) {
             const message = yield take(subscription);
-            console.log({message});
             yield put(newRate(message));
         }
 
@@ -92,16 +102,15 @@ export function* startSubscription(action) {
 }
 
 function emitRate(emit, baseCcy, termsCcy) {
-    const uri = `https://api.exchangeratesapi.io/latest?symbols=${termsCcy}&base=${baseCcy}`;
+    const uri = `${API_HOST}/latest?symbols=${termsCcy}&base=${baseCcy}`;
     return fetch(uri)
         .then(d => d.json())
         .then(d => {emit(d.rates[termsCcy]);})
 }
-
 function fetchCurrenciesList() {
-    return fetch('https://api.exchangeratesapi.io/latest?base=GBP')
+    return fetch(API_HOST + '/latest?base=GBP')
         .then(d => d.json())
-        .then(d => Object.keys(d.rates));
+        .then(d => {const ccys = Object.keys(d.rates); ccys.sort(); return ccys;});
 }
 
 export function* fetchCurrencies() {
