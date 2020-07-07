@@ -1,5 +1,4 @@
 import React, {useEffect} from 'react';
-import logo from './logo.svg';
 import './App.css';
 import { connect } from 'react-redux';
 import { changeBaseCurrency, changeTermsCurrency, swapCurrencies } from './redux/currencies';

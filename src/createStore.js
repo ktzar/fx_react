@@ -7,7 +7,8 @@ import {
     startSubscription,
     swapCurrencies,
     changeBaseCurrency,
-    changeTermsCurrency
+    changeTermsCurrency,
+    fetchCurrencies
 } from './redux/currencies';
 
 import { appLoaded } from './redux/appState';
@@ -22,7 +23,7 @@ export function* rootSaga() {
             [swapCurrencies, changeBaseCurrency, changeTermsCurrency],
             startSubscription
         ),
-        takeLatest(appLoaded, startSubscription)
+        takeLatest(appLoaded, fetchCurrencies)
     ]);
 };
 
