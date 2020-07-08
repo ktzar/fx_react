@@ -76,6 +76,7 @@ export const AppComponent = (props) => {
         ccy={baseCcy}
         funds={basePocket}
         amount={baseAmount}
+        changed={recentTransaction}
         onChangeCcy={onChangeBase}
         onChangeAmount={onChangeAmount}
       />
@@ -89,6 +90,7 @@ export const AppComponent = (props) => {
         editable={false}
         currencies={currenciesList}
         ccy={termsCcy}
+        changed={recentTransaction}
         funds={termsPocket}
         amount={termsAmount}
         onChangeCcy={onChangeTerms}

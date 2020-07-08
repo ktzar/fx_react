@@ -2,7 +2,6 @@ import React from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import posed from "react-pose";
-import { connect } from "react-redux";
 
 import { formatAmount } from "../utils/formatting";
 
@@ -26,7 +25,7 @@ const AnimatedText = posed.span({
   static: { translateY: "0px", color: "#888" },
 });
 
-export const BalanceComponent = ({ increases, changed, ccy, funds }) => {
+export const Balance = ({ increases, changed, ccy, funds }) => {
   const pose = changed ? (increases ? "up" : "down") : "static";
   return (
     <BalanceContainer className="balance">
@@ -36,15 +35,9 @@ export const BalanceComponent = ({ increases, changed, ccy, funds }) => {
   );
 };
 
-BalanceComponent.propTypes = {
+Balance.propTypes = {
   increases: PropTypes.bool,
   changed: PropTypes.bool,
   ccy: PropTypes.string,
   funds: PropTypes.number,
 };
-
-const mapStateToProps = (state) => ({
-  changed: state.pockets.recentTransaction,
-});
-
-export const Balance = connect(mapStateToProps)(BalanceComponent);

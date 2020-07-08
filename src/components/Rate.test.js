@@ -7,6 +7,6 @@ describe("Rate component", () => {
     const wrapper = shallow(
       <Rate baseCcy="EUR" termsCcy="USD" rate={1.123456789} />
     );
-    expect(wrapper.text()).toEqual("💱 EUR 1 = USD 1.123456789");
+    expect(wrapper.text()).toEqual("⤮ EUR 1 = USD 1.123456789");
   });
 });

@@ -53,6 +53,7 @@ export const CurrencyPanel = ({
   ccy,
   funds,
   amount,
+  changed,
   onChangeCcy,
   onChangeAmount,
 }) => {
@@ -75,7 +76,7 @@ export const CurrencyPanel = ({
           <AmountLabel>{formatAmount(amount)}</AmountLabel>
         )}
       </Amount>
-      <Balance increases={!editable} ccy={ccy} funds={funds} />
+      <Balance changed={changed} increases={!editable} ccy={ccy} funds={funds} />
     </CurrencySection>
   );
 };
@@ -87,5 +88,6 @@ CurrencyPanel.propTypes = {
   funds: PropTypes.number,
   amount: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   onChangeCcy: PropTypes.func,
+  changed: PropTypes.bool,
   onChangeAmount: PropTypes.func,
 };
