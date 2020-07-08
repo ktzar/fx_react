@@ -34,7 +34,8 @@ const CentralBar = styled.div`
 export const AppComponent = (props) => {
   const {
     pockets,
-    notionalAmount,
+    baseAmount,
+    termsAmount,
     notionalCcy,
     baseCcy,
     termsCcy,
@@ -54,15 +55,6 @@ export const AppComponent = (props) => {
 
   useEffect(onAppLoaded, []);
 
-  const baseAmount =
-    notionalCcy === baseCcy
-      ? notionalAmount
-      : (notionalAmount / rate).toFixed(2);
-  const termsAmount =
-    notionalCcy === termsCcy
-      ? notionalAmount
-      : (notionalAmount * rate).toFixed(2);
-
   const basePocket = pockets[baseCcy] || pockets[baseCcy];
   const termsPocket = pockets[termsCcy] || pockets[termsCcy];
 
@@ -74,11 +66,12 @@ export const AppComponent = (props) => {
         editable
         currencies={currenciesList}
         ccy={baseCcy}
+        direction="SELL"
         funds={basePocket}
         amount={baseAmount}
         changed={recentTransaction}
         onChangeCcy={onChangeBase}
-        onChangeAmount={onChangeAmount}
+        onChangeAmount={(evt) => onChangeAmount(evt, baseCcy)}
       />
 
       <CentralBar className="central-bar">
@@ -87,12 +80,14 @@ export const AppComponent = (props) => {
       </CentralBar>
 
       <CurrencyPanel
-        editable={false}
+        editable
         currencies={currenciesList}
+        direction="BUY"
         ccy={termsCcy}
         changed={recentTransaction}
         funds={termsPocket}
         amount={termsAmount}
+        onChangeAmount={(evt) => onChangeAmount(evt, termsCcy)}
         onChangeCcy={onChangeTerms}
       />
 
@@ -107,7 +102,8 @@ export const AppComponent = (props) => {
 };
 
 const mapStateToProps = (state) => ({
-  notionalAmount: state.currencies.notionalAmount,
+  baseAmount: state.currencies.baseAmount,
+  termsAmount: state.currencies.termsAmount,
   notionalCcy: state.currencies.notionalCcy,
   currenciesList: state.currencies.currenciesList,
   baseCcy: state.currencies.baseCcy,
@@ -122,8 +118,8 @@ const mapDispatchToProps = (dispatch) => ({
   onExchange: (evt) => dispatch(attemptTransaction()),
   onChangeBase: (evt) => dispatch(changeBaseCcy(evt.target.value)),
   onChangeTerms: (evt) => dispatch(changeTermsCcy(evt.target.value)),
-  onChangeAmount: (evt, notionalCcy) =>
-    dispatch(changeAmount({ value: evt.target.value, notionalCcy })),
+  onChangeAmount: (evt, ccy) =>
+    dispatch(changeAmount({ value: evt.target.value, ccy })),
   onSwap: () => dispatch(swapCurrencies()),
   onAppLoaded: () => dispatch(appLoaded()),
 });

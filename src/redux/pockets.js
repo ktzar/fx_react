@@ -23,18 +23,18 @@ export const pocketsReducer = handleActions(
       };
     },
     [executeTransaction]: (state, { payload }) => {
-      const { baseCcy, termsCcy, dealtAmount, notionalAmount } = payload;
+      const { baseCcy, termsCcy, baseAmount, termsAmount } = payload;
 
-      const newNotionalAmount = state.amounts[baseCcy] + notionalAmount;
+      const newBaseAmount = state.amounts[baseCcy] + baseAmount;
       const newDealtAmount =
-        (state.amounts[termsCcy] ? state.amounts[termsCcy] : 0) + dealtAmount;
+        (state.amounts[termsCcy] ? state.amounts[termsCcy] : 0) + termsAmount;
 
       return {
         ...state,
         recentTransaction: true,
         amounts: {
           ...state.amounts,
-          [baseCcy]: newNotionalAmount,
+          [baseCcy]: newBaseAmount,
           [termsCcy]: newDealtAmount,
         },
       };
@@ -45,16 +45,16 @@ export const pocketsReducer = handleActions(
 
 export function* executeIfEnoughFunds() {
   const state = yield select();
-  const { notionalAmount, baseCcy, termsCcy, rate } = state.currencies;
+  const { baseAmount, termsAmount, baseCcy, termsCcy } = state.currencies;
   const pocketAmounts = state.pockets.amounts;
 
-  if (pocketAmounts[baseCcy] >= notionalAmount) {
+  if (pocketAmounts[baseCcy] >= parseFloat(baseAmount)) {
     yield put(
       executeTransaction({
         baseCcy,
         termsCcy,
-        notionalAmount: notionalAmount * -1,
-        dealtAmount: parseFloat((notionalAmount * rate).toFixed(2)),
+        baseAmount: parseFloat(baseAmount) * -1,
+        termsAmount: parseFloat(termsAmount),
       })
     );
     yield delay(500);

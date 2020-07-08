@@ -15,7 +15,7 @@ export const inputToAmount = (value) => {
     2,
     dotPosition !== -1 ? value.length - dotPosition - 1 : 0
   );
-  return Math.min(9999999, parseFloat(value)).toFixed(precision);
+  return Math.min(9999999, numeral(value).value()).toFixed(precision);
 };
 
 export const formatAmount = (amount) => numeral(amount).format("0,0.00");

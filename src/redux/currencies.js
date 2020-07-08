@@ -1,18 +1,21 @@
 import { createAction, handleActions } from "redux-actions";
 import { eventChannel } from "redux-saga";
 import { select, take, put, call } from "redux-saga/effects";
-import { inputToAmount } from "../utils/formatting";
+import { inputToAmount, formatAmount } from "../utils/formatting";
 import { fetchRate, fetchCurrenciesList } from "../services/currencies";
+
+import { executeTransaction } from "./pockets";
 
 const POLLING_TIME = 10000;
 
 export const initialState = {
-  notionalAmount: 10,
+  baseAmount: null,
+  termsAmount: null,
   notionalCcy: "GBP",
   currenciesList: ["GBP", "USD"],
   baseCcy: "GBP",
   termsCcy: "USD",
-  rate: 1.22,
+  rate: null,
 };
 
 export const newRate = createAction("NEW_RATE");
@@ -24,13 +27,28 @@ export const receiveCurrencies = createAction("RECEIVE_CURRENCIES");
 
 export const currenciesReducer = handleActions(
   {
-    [changeAmount]: (state, { payload }) => {
-      const { value, notionalCcy } = payload;
-      const notionalAmount = inputToAmount(value);
+    [executeTransaction]: (state) => {
       return {
         ...state,
-        notionalAmount,
-        notionalCcy,
+        baseAmount: null,
+        termsAmount: null,
+      };
+    },
+    [changeAmount]: (state, { payload }) => {
+      const { value, ccy } = payload;
+      let amount = inputToAmount(value);
+      if (isNaN(amount)) {
+        amount = 0;
+      }
+      const baseAmount =
+        ccy === state.baseCcy ? amount : formatAmount(amount / state.rate);
+      const termsAmount =
+        ccy === state.termsCcy ? amount : formatAmount(amount * state.rate);
+
+      return {
+        ...state,
+        baseAmount,
+        termsAmount,
       };
     },
     [receiveCurrencies]: (state, { payload }) => {
@@ -44,6 +62,8 @@ export const currenciesReducer = handleActions(
         ...state,
         baseCcy: state.termsCcy,
         termsCcy: state.baseCcy,
+        baseAmount: state.termsAmount,
+        termsAmount: state.baseAmount,
       };
     },
     [newRate]: (state, { payload }) => {

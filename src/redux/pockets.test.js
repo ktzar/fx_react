@@ -15,8 +15,8 @@ describe("pocketsReducer", () => {
       executeTransaction({
         baseCcy: "GBP",
         termsCcy: "AUD",
-        dealtAmount: 10.25,
-        notionalAmount: -10,
+        baseAmount: -10,
+        termsAmount: 10.25,
       })
     );
 
@@ -30,8 +30,8 @@ describe("pocketsReducer", () => {
       executeTransaction({
         baseCcy: "GBP",
         termsCcy: "EUR",
-        dealtAmount: 10.25,
-        notionalAmount: 10,
+        baseAmount: -10,
+        termsAmount: 10.25,
       })
     );
 

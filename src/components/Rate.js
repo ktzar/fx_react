@@ -2,6 +2,8 @@ import React from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 
+import { formatRate } from "../utils/formatting";
+
 const RoundSection = styled.button`
   border: 0;
   background: white;
@@ -20,7 +22,7 @@ const RoundSection = styled.button`
 export const Rate = (props) => {
   return (
     <RoundSection>
-      ⤮ {props.baseCcy} 1 = {props.termsCcy} {props.rate}
+      ⤮ {props.baseCcy} 1 = {props.termsCcy} {formatRate(props.rate)}
     </RoundSection>
   );
 };

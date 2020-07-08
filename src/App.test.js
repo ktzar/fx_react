@@ -31,7 +31,8 @@ describe("App", () => {
   const state = {
     currencies: {
       currenciesList: ["AAA", "BBB", "CCC"],
-      notionalAmount: 10,
+      baseAmount: 10,
+      termsAmount: 12,
       notionalCcy: "CCC",
       termsCcy: "AAA",
       baseCcy: "CCC",
@@ -49,7 +50,8 @@ describe("App", () => {
   );
   expect(wrapper.find("AppComponent").props()).toEqual(
     expect.objectContaining({
-      notionalAmount: 10,
+      baseAmount: 10,
+      termsAmount: 12,
       notionalCcy: "CCC",
       currenciesList: ["AAA", "BBB", "CCC"],
       baseCcy: "CCC",

@@ -24,5 +24,9 @@ const RoundButton = styled.button`
 `;
 
 export const FlipButton = (props) => {
-  return <RoundButton onClick={props.onClick}>⇵</RoundButton>;
+  return (
+    <RoundButton title="Flip currencies" onClick={props.onClick}>
+      ⇵
+    </RoundButton>
+  );
 };

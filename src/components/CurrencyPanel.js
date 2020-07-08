@@ -36,9 +36,12 @@ const CurrencySelect = styled.select`
 
 const AmountInput = styled.input`
   width: 50%;
+  color: ${(props) => (props.direction === "BUY" ? "#292" : "#922")};
   margin-right: 20px;
   text-align: right;
-  background: transparent;
+  border-radius: 20px;
+  padding: 0 10px;
+  background: rgba(128, 128, 128, 0.1);
   border: 0;
 `;
 
@@ -52,6 +55,7 @@ export const CurrencyPanel = ({
   currencies,
   ccy,
   funds,
+  direction,
   amount,
   changed,
   onChangeCcy,
@@ -69,6 +73,7 @@ export const CurrencyPanel = ({
         </CurrencySelect>
         {editable ? (
           <AmountInput
+            direction={direction}
             onChange={(evt) => onChangeAmount(evt, ccy)}
             value={amount}
           />
@@ -76,13 +81,20 @@ export const CurrencyPanel = ({
           <AmountLabel>{formatAmount(amount)}</AmountLabel>
         )}
       </Amount>
-      <Balance changed={changed} increases={!editable} ccy={ccy} funds={funds} />
+      <Balance
+        changed={changed}
+        increases={direction === "BUY"}
+        ccy={ccy}
+        insufficient={amount > funds && direction === "SELL"}
+        funds={funds}
+      />
     </CurrencySection>
   );
 };
 
 CurrencyPanel.propTypes = {
   editable: PropTypes.bool,
+  direction: PropTypes.string,
   currencies: PropTypes.array,
   ccy: PropTypes.string,
   funds: PropTypes.number,
