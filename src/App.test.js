@@ -33,7 +33,6 @@ describe("App", () => {
       currenciesList: ["AAA", "BBB", "CCC"],
       baseAmount: 10,
       termsAmount: 12,
-      notionalCcy: "CCC",
       termsCcy: "AAA",
       baseCcy: "CCC",
       rate: 1.234,
@@ -52,7 +51,6 @@ describe("App", () => {
     expect.objectContaining({
       baseAmount: 10,
       termsAmount: 12,
-      notionalCcy: "CCC",
       currenciesList: ["AAA", "BBB", "CCC"],
       baseCcy: "CCC",
       termsCcy: "AAA",

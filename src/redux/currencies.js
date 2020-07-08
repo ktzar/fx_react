@@ -30,8 +30,8 @@ export const currenciesReducer = handleActions(
     [executeTransaction]: (state) => {
       return {
         ...state,
-        baseAmount: null,
-        termsAmount: null,
+        baseAmount: '',
+        termsAmount: '',
       };
     },
     [changeAmount]: (state, { payload }) => {

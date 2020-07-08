@@ -36,7 +36,6 @@ export const AppComponent = (props) => {
     pockets,
     baseAmount,
     termsAmount,
-    notionalCcy,
     baseCcy,
     termsCcy,
     currenciesList,
@@ -104,7 +103,6 @@ export const AppComponent = (props) => {
 const mapStateToProps = (state) => ({
   baseAmount: state.currencies.baseAmount,
   termsAmount: state.currencies.termsAmount,
-  notionalCcy: state.currencies.notionalCcy,
   currenciesList: state.currencies.currenciesList,
   baseCcy: state.currencies.baseCcy,
   termsCcy: state.currencies.termsCcy,
