@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 import { formatAmount } from '../utils/formatting';
@@ -22,7 +23,7 @@ const Amount = styled.div`
 const Balance = styled.div`
     color: #888;
     text-align: left;
-    margin: 16px 0;
+    margin: 16px 6px;
     font-size: 14px;
 `;
 
@@ -31,10 +32,10 @@ const CurrencySelect = styled.select`
   height: 35px;
   background: transparent;
   color: gray;
-  padding-left: 5px;
+  padding-left: 0;
   font-size: 30px;
   border: none;
-  margin-left: 10px;
+  margin-left: 0;
   cursor: pointer;
 `;
 
@@ -61,11 +62,19 @@ export const CurrencyPanel = ({editable, currencies, ccy, funds, amount, onChang
                 : <AmountLabel>{formatAmount(amount)}</AmountLabel>
             }
         </Amount>
-        <Balance>
+        <Balance className="balance">
             { 'Balance: '+ ccy + ' ' + formatAmount(funds) }
         </Balance>
       </CurrencySection>
   );
 };
 
-//TODO proptypes
+CurrencyPanel.propTypes = {
+    editable: PropTypes.bool,
+    currencies: PropTypes.array,
+    ccy: PropTypes.string,
+    funds: PropTypes.number,
+    amount: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    onChangeCcy: PropTypes.func,
+    onChangeAmount: PropTypes.func
+};

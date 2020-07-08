@@ -6,17 +6,15 @@ import { fetchRate, fetchCurrenciesList } from '../services/currencies';
 
 const POLLING_TIME = 10000;
 
-const initialState = {
+export const initialState = {
     notionalAmount: 100,
     notionalCcy: 'GBP',
     currenciesList: ['GBP', 'USD'],
-    dealtCcy: 'GBP',
     baseCcy: 'GBP',
     termsCcy: 'USD',
     rate: 1.22
 };
 
-//actions
 export const newRate = createAction('NEW_RATE');
 export const swapCurrencies = createAction('SWAP_CURRENCIES');
 export const changeAmount = createAction('CHANGE_AMOUNT');
@@ -28,7 +26,7 @@ export const currenciesReducer = handleActions(
     {
         [changeAmount]: (state, {payload}) => {
             const {value, notionalCcy} = payload;
-            const notionalAmount = Math.min(10000000, inputToAmount(value))
+            const notionalAmount = inputToAmount(value);
             return {
                 ...state,
                 notionalAmount,
@@ -76,7 +74,7 @@ function emitRate(emit, baseCcy, termsCcy) {
     fetchRate(baseCcy, termsCcy).then(rate => emit(rate));
 }
 
-export function* startSubscription(action) {
+export function* startSubscription() {
     try {
         if (subscription) {
             subscription.close();

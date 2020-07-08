@@ -18,5 +18,4 @@ export const CTAButton = styled.button`
         border: none; 
         outline: none;
     }
-
 `;

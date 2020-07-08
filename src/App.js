@@ -46,7 +46,7 @@ export const AppComponent = (props) => {
       <AppHeader>Exchange</AppHeader>
       <CurrencyPanel editable currencies={currenciesList} ccy={baseCcy} funds={basePocket} amount={baseAmount} onChangeCcy={onChangeBase} onChangeAmount={onChangeAmount} /> 
 
-      <CentralBar>
+      <CentralBar className="central-bar">
         <FlipButton onClick={onSwap} /> <Rate baseCcy={baseCcy} termsCcy={termsCcy} rate={rate} />
       </CentralBar>
 
@@ -72,8 +72,8 @@ const mapDispatchToProps = (dispatch) => ({
     onExchange: evt => dispatch(attemptTransaction()),
     onChangeBase: evt => dispatch(changeBaseCcy(evt.target.value)),
     onChangeTerms: evt => dispatch(changeTermsCcy(evt.target.value)),
-    onSwap: () => dispatch(swapCurrencies()),
     onChangeAmount: (evt, notionalCcy) => dispatch(changeAmount({value: evt.target.value, notionalCcy})),
+    onSwap: () => dispatch(swapCurrencies()),
     onAppLoaded: () => dispatch(appLoaded())
 });
 

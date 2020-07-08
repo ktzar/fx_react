@@ -1,7 +1,7 @@
 import { createAction, handleActions } from 'redux-actions';
 import { select, take, put, call } from 'redux-saga/effects';
 
-const initialState = {
+export const initialState = {
     amounts: {
         USD: 200,
         EUR: 500,
@@ -38,8 +38,6 @@ export function* executeIfEnoughFunds() {
     const { notionalAmount, baseCcy, termsCcy, rate } = state.currencies;
     const pocketAmounts = state.pockets.amounts;
 
-    console.log({ notionalAmount, baseCcy, termsCcy, rate, pocketAmounts });
-
     if (pocketAmounts[baseCcy] >= notionalAmount) {
         yield put(executeTransaction({
             baseCcy,
@@ -48,6 +46,4 @@ export function* executeIfEnoughFunds() {
             dealtAmount: parseFloat((notionalAmount * rate).toFixed(2))
         }));
     }
-    console.log('attempt transaction', state);
-    
 }
