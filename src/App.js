@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import styled from "styled-components";
 import { connect } from "react-redux";
 
-import "./App.css";
 import {
   changeAmount,
   changeBaseCcy,
@@ -13,8 +12,6 @@ import { attemptTransaction } from "./redux/pockets";
 import { appLoaded } from "./redux/appState";
 import { canExchange } from "./redux/selectors";
 
-import { formatAmount } from "./utils/formatting";
-
 import { CurrencyPanel } from "./components/CurrencyPanel";
 import { FlipButton } from "./components/FlipButton";
 import { Rate } from "./components/Rate";
@@ -22,14 +19,16 @@ import { AppHeader } from "./components/AppHeader";
 import { CTAButton } from "./components/CTAButton";
 
 const AppContainer = styled.div`
+  text-align: center;
+  font-family: Helvetica, Arial, sans;
   display: flex;
-  flex-direction: column;
   align-items: center;
+  flex-direction: column;
 `;
 
 const CentralBar = styled.div`
   position: relative;
-  top: 12px;
+  top: 16px;
 `;
 
 export const AppComponent = (props) => {
@@ -40,6 +39,7 @@ export const AppComponent = (props) => {
     baseCcy,
     termsCcy,
     currenciesList,
+    recentTransaction,
     rate,
   } = props;
   const {
@@ -67,8 +67,9 @@ export const AppComponent = (props) => {
   const termsPocket = pockets[termsCcy] || pockets[termsCcy];
 
   return (
-    <div className="App">
+    <AppContainer>
       <AppHeader>Exchange</AppHeader>
+
       <CurrencyPanel
         editable
         currencies={currenciesList}
@@ -93,10 +94,13 @@ export const AppComponent = (props) => {
         onChangeCcy={onChangeTerms}
       />
 
-      <CTAButton onClick={onExchange} disabled={isExchangeDisabled}>
+      <CTAButton
+        onClick={onExchange}
+        disabled={recentTransaction || isExchangeDisabled}
+      >
         Exchange
       </CTAButton>
-    </div>
+    </AppContainer>
   );
 };
 
@@ -109,6 +113,7 @@ const mapStateToProps = (state) => ({
   isExchangeDisabled: !canExchange(state),
   rate: state.currencies.rate,
   pockets: state.pockets.amounts,
+  recentTransaction: state.pockets.recentTransaction,
 });
 
 const mapDispatchToProps = (dispatch) => ({

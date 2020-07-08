@@ -1,6 +1,4 @@
 import { createAction, handleActions } from "redux-actions";
-import { eventChannel } from "redux-saga";
-import { select, take, put, call } from "redux-saga/effects";
 
 const initialState = {};
 

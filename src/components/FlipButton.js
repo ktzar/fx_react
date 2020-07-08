@@ -2,17 +2,24 @@ import React from "react";
 import styled from "styled-components";
 
 const RoundButton = styled.button`
-  border: 1px solid #666;
-  background: white;
-  width: 22px;
-  height: 20px;
-  border-radius: 20px;
+  border: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 25px;
+  font-size: 20px;
   cursor: pointer;
+  background: ;
+  background: ${(props) => (props.disabled ? "#999" : "#5dade2")};
+  box-shadow: 0 5px 5px rgba(93, 173, 226, 0.3);
+  color: white;
+  position: relative;
+  top: 2px;
 
   &:hover,
   &:active,
   &:focus {
     outline: none;
+    background-color: #4d9dd2;
   }
 `;
 

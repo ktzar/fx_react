@@ -1,5 +1,5 @@
 import { createAction, handleActions } from "redux-actions";
-import { select, take, put, call } from "redux-saga/effects";
+import { delay, select, put } from "redux-saga/effects";
 
 export const initialState = {
   amounts: {
@@ -7,13 +7,21 @@ export const initialState = {
     EUR: 500,
     GBP: 100,
   },
+  recentTransaction: false,
 };
 
+export const recentTransactionDone = createAction("RECENT_TRANSACTION_DONE");
 export const executeTransaction = createAction("EXECUTE_TRANSACTION");
 export const attemptTransaction = createAction("ATTEMPT_TRANSACTION");
 
 export const pocketsReducer = handleActions(
   {
+    [recentTransactionDone]: (state) => {
+      return {
+        ...state,
+        recentTransaction: false,
+      };
+    },
     [executeTransaction]: (state, { payload }) => {
       const { baseCcy, termsCcy, dealtAmount, notionalAmount } = payload;
 
@@ -23,6 +31,7 @@ export const pocketsReducer = handleActions(
 
       return {
         ...state,
+        recentTransaction: true,
         amounts: {
           ...state.amounts,
           [baseCcy]: newNotionalAmount,
@@ -48,5 +57,7 @@ export function* executeIfEnoughFunds() {
         dealtAmount: parseFloat((notionalAmount * rate).toFixed(2)),
       })
     );
+    yield delay(500);
+    yield put(recentTransactionDone());
   }
 }

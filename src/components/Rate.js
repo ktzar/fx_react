@@ -2,20 +2,25 @@ import React from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 
-import { formatRate } from "../utils/formatting";
-
 const RoundSection = styled.button`
-  border: 1px solid #ccc;
+  border: 0;
   background: white;
   border-radius: 20px;
-  padding: 0 8px;
-  color: #5dade2;
+  padding: 6px 8px;
+  background-color: #5dade2;
+  color: white;
+
+  &:hover,
+  &:active,
+  &:focus {
+    outline: none;
+  }
 `;
 
 export const Rate = (props) => {
   return (
     <RoundSection>
-      💱 {props.baseCcy} 1 = {props.termsCcy} {props.rate}
+      ⤮ {props.baseCcy} 1 = {props.termsCcy} {props.rate}
     </RoundSection>
   );
 };

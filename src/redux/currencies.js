@@ -7,7 +7,7 @@ import { fetchRate, fetchCurrenciesList } from "../services/currencies";
 const POLLING_TIME = 10000;
 
 export const initialState = {
-  notionalAmount: 100,
+  notionalAmount: 10,
   notionalCcy: "GBP",
   currenciesList: ["GBP", "USD"],
   baseCcy: "GBP",
@@ -69,10 +69,6 @@ export const currenciesReducer = handleActions(
 );
 
 let subscription;
-
-function emitRate(emit, baseCcy, termsCcy) {
-  fetchRate(baseCcy, termsCcy).then((rate) => emit(rate));
-}
 
 export function* startSubscription() {
   try {

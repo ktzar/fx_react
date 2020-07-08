@@ -3,12 +3,13 @@ import PropTypes from "prop-types";
 import styled from "styled-components";
 
 import { formatAmount } from "../utils/formatting";
+import { Balance } from "./Balance";
 
 const CurrencySection = styled.div`
-  background: white;
   background: linear-gradient(0deg, white 0%, #ebebeb 100%);
   align-self: center;
-  padding: 30px 8px;
+  padding: 30px;
+  width: 100%;
 
   input,
   label {
@@ -21,13 +22,6 @@ const Amount = styled.div`
   justify-content: space-between;
 `;
 
-const Balance = styled.div`
-  color: #888;
-  text-align: left;
-  margin: 16px 6px;
-  font-size: 14px;
-`;
-
 const CurrencySelect = styled.select`
   width: 120px;
   height: 35px;
@@ -36,12 +30,13 @@ const CurrencySelect = styled.select`
   padding-left: 0;
   font-size: 30px;
   border: none;
-  margin-left: 0;
+  margin-left: 20px;
   cursor: pointer;
 `;
 
 const AmountInput = styled.input`
   width: 50%;
+  margin-right: 20px;
   text-align: right;
   background: transparent;
   border: 0;
@@ -49,6 +44,7 @@ const AmountInput = styled.input`
 
 const AmountLabel = styled.label`
   color: #888;
+  margin-right: 20px;
 `;
 
 export const CurrencyPanel = ({
@@ -79,9 +75,7 @@ export const CurrencyPanel = ({
           <AmountLabel>{formatAmount(amount)}</AmountLabel>
         )}
       </Amount>
-      <Balance className="balance">
-        {"Balance: " + ccy + " " + formatAmount(funds)}
-      </Balance>
+      <Balance increases={!editable} ccy={ccy} funds={funds} />
     </CurrencySection>
   );
 };
